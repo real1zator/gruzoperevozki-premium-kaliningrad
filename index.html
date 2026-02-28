@@ -12,6 +12,8 @@
 <style>
 /* Скрыть рейтинг-число, "|" и "отзывов" внутри avito-badge */
 .avito-badge > span { display: none !important; }
+/* Скрыть имя в лого навбара (первый span внутри leading-tight) */
+[data-testid="nav-logo"] .leading-tight span:first-child { display: none !important; }
 
 /* Кнопка Авито в стиле Авито */
 a[data-testid="avito-profile-link"],
