@@ -12,8 +12,19 @@
 <style>
 /* Скрыть рейтинг-число, "|" и "отзывов" внутри avito-badge */
 .avito-badge > span { display: none !important; }
-/* Скрыть имя в лого навбара (первый span внутри leading-tight) */
-[data-testid="nav-logo"] .leading-tight span:first-child { display: none !important; }
+/* Имя Сергей — крупный градиентный текст рядом с Грузоперевозки */
+.custom-owner-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: .03em;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #10b981 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  display: block;
+}
 
 /* Кнопка Авито в стиле Авито */
 a[data-testid="avito-profile-link"],
@@ -59,20 +70,38 @@ a[data-testid="avito-reviews-link"]::before {
   function patchBadge() {
     var badges = document.querySelectorAll('[data-testid="avito-badge"]');
     badges.forEach(function(badge) {
-      // Убираем число рейтинга (span сразу после звёзд), "|", "47 отзывов"
       var children = Array.from(badge.children);
       children.forEach(function(el) {
         if (el.tagName === 'SPAN') el.style.display = 'none';
       });
     });
-    // В секции отзывов убрать число и "отзывов" - оставить только звёзды + кнопку
-    var ratingBlock = document.querySelector('[data-testid="reviews-marquee"]');
-    // не трогаем - там хорошо
   }
+  // Вставить имя Сергей в лого
+  function patchLogo() {
+    var logos = document.querySelectorAll('[data-testid="nav-logo"] .leading-tight, .footer-logo .leading-tight, footer .leading-tight');
+    logos.forEach(function(el) {
+      var nameSpan = el.querySelector('span:first-child');
+      if (nameSpan) {
+        nameSpan.textContent = 'Сергей';
+        nameSpan.className = 'custom-owner-name';
+      }
+    });
+    // футер: найдём блок с "Грузоперевозки" текстом
+    document.querySelectorAll('footer .leading-tight, footer div').forEach(function(el) {
+      if (el.children && el.children.length >= 2) {
+        var first = el.children[0];
+        if (first && first.tagName === 'DIV' && first.textContent.trim() === '') {
+          first.textContent = 'Сергей';
+          first.className = 'custom-owner-name';
+        }
+      }
+    });
+  }
+  function run() { patchBadge(); patchLogo(); }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() { setTimeout(patchBadge, 300); });
+    document.addEventListener('DOMContentLoaded', function() { setTimeout(run, 300); });
   } else {
-    setTimeout(patchBadge, 300);
+    setTimeout(run, 300);
   }
 })();
 </script>
